@@ -79,7 +79,7 @@ class App extends Component {
                 }
               </div>
             )
-          else if (movie.title.toLowerCase() == this.state.query) {
+          else if (movie.title.toLowerCase().includes(this.state.query)) {
             return (
               <div>
                 {
