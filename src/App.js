@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
+import ReactLoading from 'react-loading';
 import logo from './logo.svg';
 import './App.css';
 import { Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle, Button } from 'reactstrap';
+import {SearchBar} from "react-elements";
 
 // This is used to download and use some information about the card
-class Color extends Component {
-  render() {
-    return (
-      <div>
-        <h1> This is a new color {this.props.color} </h1>
-      </div>
-    )
-  } 
-}
-
 class Movie extends Component {
   render() {
     const realPosterPath = "https://image.tmdb.org/t/p/w342" + this.props.poster_path;
@@ -37,36 +29,73 @@ class Movie extends Component {
 }
 
 class App extends Component {
-
-  async componentDidMount = () => {
-    const response = await fetch();
-    const movieData = await response.json();
-  }
-
   constructor() {
     super();
     this.state = {
-      color: "red",
-      car: "Toyota"
+      query: "",
+      listMovies : [],  
+      isVisibleLoading: true 
     }
   }
+
+  sleep = function(time){new Promise(r => setTimeout(r, time));}
+
+  async componentDidMount() {
+    const response = await fetch("https://api.themoviedb.org/3/movie/now_playing?api_key=99846e28fc271111f758a8e9c8486d0b");
+    const movieData = await response.json();
+    await this.sleep(4000);
+    this.setState({
+      listMovies: movieData.results,
+      isVisibleLoading: false
+    });
+  }
+
+  handleChange = function(event) {
+    event.preventDefault();
+    this.setState({query: event.search});
+  }
+
   render() {
-    const listMovies = fakeData.results;
     return (
-      <div className="App">
-        {
-          listMovies.map((movie) => {
+      <div className ="App">
+      <form>
+        <input 
+          placeholder = "Search for ..."
+          ref = {(input) => this.search = input}
+        />
+        <button type = "button" onClick={() => {this.handleChange.bind(this)}}>
+          SEARCH
+        </button>
+      </form>
+      {console.log(this.state.query.length)}
+      {
+        this.state.isVisibleLoading === true ? (
+          <ReactLoading type = 'spin' color = 'red' width = {100} height = {100}/>
+        )
+        :(this.state.listMovies.map((movie) => {
+          if (this.state.query.length == 0)
             return (
               <div>
-                <Movie 
-                  title = {movie.title}
+                {
+                  <Movie title = {movie.title}
                   overview = {movie.overview}
-                  poster_path = {movie.poster_path}
-               />
+                  poster_path = {movie.poster_path}/>
+                }
               </div>
             )
-          })
-        }
+          else if (movie.title = this.state.query) {
+            return (
+              <div>
+                {
+                  <Movie title = {movie.title}
+                  overview = {movie.overview}
+                  poster_path = {movie.poster_path}/>
+                }
+              </div>
+            )
+          }
+          }))
+      }
       </div>
     );
   }
