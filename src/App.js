@@ -50,9 +50,8 @@ class App extends Component {
     });
   }
 
-  handleChange = function(event) {
-    event.preventDefault();
-    this.setState({query: event.search});
+  handleChange = (event) => {
+    this.setState({query: event.target.value});
   }
 
   render() {
@@ -61,13 +60,10 @@ class App extends Component {
       <form>
         <input 
           placeholder = "Search for ..."
-          ref = {(input) => this.search = input}
+          value = {this.state.query}
+          onChange = {(event) => {this.handleChange(event)}}
         />
-        <button type = "button" onClick={() => {this.handleChange.bind(this)}}>
-          SEARCH
-        </button>
       </form>
-      {console.log(this.state.query.length)}
       {
         this.state.isVisibleLoading === true ? (
           <ReactLoading type = 'spin' color = 'red' width = {100} height = {100}/>
@@ -83,7 +79,7 @@ class App extends Component {
                 }
               </div>
             )
-          else if (movie.title = this.state.query) {
+          else if (movie.title.toLowerCase() == this.state.query) {
             return (
               <div>
                 {
